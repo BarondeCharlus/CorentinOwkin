@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-12-24 sam. 13:05 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Owkin Technical test</title>
+<meta name="author" content="Kaderovski" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Owkin Technical test</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org0de6f74">1. Instruction</a></li>
+<li><a href="#orgae7c2e7">2. Conception</a>
+<ul>
+<li><a href="#org7c488dc">2.1. Restful API</a></li>
+<li><a href="#org5726d93">2.2. Terraform Builder</a></li>
+</ul>
+</li>
+<li><a href="#orgde58ce8">3. Installation</a>
+<ul>
+<li><a href="#orgb004e97">3.1. Requirements</a></li>
+<li><a href="#org1713c8c">3.2. Deploy locally</a></li>
+</ul>
+</li>
+<li><a href="#org34175f1">4. Usage</a>
+<ul>
+<li><a href="#org93277a0">4.1. CRUD API</a>
+<ul>
+<li><a href="#org1c6d1e1">4.1.1. Create</a></li>
+<li><a href="#org30aaef7">4.1.2. Get</a></li>
+<li><a href="#orgf98b0c2">4.1.3. List</a></li>
+<li><a href="#org406a756">4.1.4. Update</a></li>
+<li><a href="#org96bcfad">4.1.5. Delete</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgc4b507a">5. Why it&rsquo;s not good or production ready</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org0de6f74" class="outline-2">
+<h2 id="org0de6f74"><span class="section-number-2">1.</span> Instruction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Build a Restful API that let customer :
+</p>
+<ul class="org-ul">
+<li>submit Dockerfile and get a job id</li>
+<li>get status and performance if exists</li>
+</ul>
+
+<p>
+Performance must be expressed as floating.
+</p>
+
+<p>
+Once Dockerfile successfully uploaded :
+</p>
+<ul class="org-ul">
+<li>build the container</li>
+<li>scan for vulns</li>
+</ul>
+
+<p>
+Depending of result :
+</p>
+<ul class="org-ul">
+<li>tag status as failed if vulns</li>
+<li>tag status as success if container was successfully build &amp; run in isolated env</li>
+</ul>
+
+<p>
+We would like container to write out his performance in `data/perf.json` which would be a volume mount point in `/data`.
+</p>
+
+<p>
+Eg of Dockerfile :
+</p>
+
+<div class="org-src-container">
+<pre class="src src-Dockerfile">FROM ubuntu:latest
+# train machine learning model
+# save performances
+CMD echo ʻ{“perf”:0.99}ʼ &gt; /data/perf.json
+</pre>
+</div>
+
+<p>
+Time spent need to be ~4hours.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgae7c2e7" class="outline-2">
+<h2 id="orgae7c2e7"><span class="section-number-2">2.</span> Conception</h2>
+<div class="outline-text-2" id="text-2">
+
+<div id="org407b35f" class="figure">
+<p><img src="./static/schema.png" alt="schema.png" />
+</p>
+<p><span class="figure-number">Figure 1: </span>Owkin technical test architecture</p>
+</div>
+
+<p>
+Architecture will be divided in 5 parts.
+</p>
+<ol class="org-ol">
+<li>Restful API</li>
+<li>Terraform builder</li>
+<li>Kubernetes isolation</li>
+<li>First performace : Lynis</li>
+<li>Second performace : Building and saving</li>
+</ol>
+
+<p>
+Solution will be hosted on a <code>Kubernetes</code> cluster, which in my case will be deployed on <code>minikube</code>.
+As we are in a local dev env, we will have to build our custom CI/CD in order to build and deploy automatically our tests (Terraform Builder).
+</p>
+
+<p>
+In order to isolate building container, we will use <code>Namespace</code> and <code>NetworkPolicy</code>.
+Namespace for ressources :
+</p>
+<blockquote>
+<p>
+In Kubernetes, namespaces provides a mechanism for isolating groups of resources within a single cluster.
+</p>
+</blockquote>
+<p>
+NetworkPolicy for network isolation :
+</p>
+<blockquote>
+<p>
+NetworkPolicies are an application-centric construct which allow you to specify how a pod is allowed to communicate with various network &ldquo;entities&rdquo; (we use the word &ldquo;entity&rdquo; here to avoid overloading the more common terms such as &ldquo;endpoints&rdquo; and &ldquo;services&rdquo;, which have specific Kubernetes connotations) over the network. NetworkPolicies apply to a connection with a pod on one or both ends, and are not relevant to other connections.
+</p>
+</blockquote>
+
+<p>
+In order to build on demande <code>K8s</code> ressources from <code>API</code> I use a <code>Terraform</code> builder through a small <code>Shell</code> script.
+</p>
+</div>
+
+<div id="outline-container-org7c488dc" class="outline-3">
+<h3 id="org7c488dc"><span class="section-number-3">2.1.</span> Restful API</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+In order to deliver service quickly, I used <code>Django</code> and <code>Django Ninja API</code>.
+</p>
+
+<p>
+For <b>security</b> reasons, Dockerfile will be passed as parameter as <b>gzip base64</b>.
+</p>
+
+<p>
+Create you <code>Dockerfile</code> in the rootdir of the repository and run :
+</p>
+<div class="org-src-container">
+<pre class="src src-SHELL">make base64
+</pre>
+</div>
+
+<p>
+I&rsquo;ve created a model that would allow to refer instances as following :
+</p>
+<pre class="example">
+id: uuid4
+name: string
+description: string
+dockerfile: string
+status: string
+performance: float
+</pre>
+
+<p>
+API will be described as :
+</p>
+<div class="org-src-container">
+<pre class="src src-json">{
+  <span style="color: #51afef;">"openapi"</span>: <span style="color: #98be65;">"3.0.2"</span>,
+  <span style="color: #51afef;">"info"</span>: {
+    <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"NinjaAPI"</span>,
+    <span style="color: #51afef;">"version"</span>: <span style="color: #98be65;">"0.0.1"</span>,
+    <span style="color: #51afef;">"description"</span>: <span style="color: #98be65;">""</span>
+  },
+  <span style="color: #51afef;">"paths"</span>: {
+    <span style="color: #51afef;">"/api/v1/job"</span>: {
+      <span style="color: #51afef;">"post"</span>: {
+        <span style="color: #51afef;">"operationId"</span>: <span style="color: #98be65;">"api_api_create_status"</span>,
+        <span style="color: #51afef;">"summary"</span>: <span style="color: #98be65;">"Create Status"</span>,
+        <span style="color: #51afef;">"parameters"</span>: [],
+        <span style="color: #51afef;">"responses"</span>: {
+          <span style="color: #51afef;">"200"</span>: {
+            <span style="color: #51afef;">"description"</span>: <span style="color: #98be65;">"OK"</span>
+          }
+        },
+        <span style="color: #51afef;">"requestBody"</span>: {
+          <span style="color: #51afef;">"content"</span>: {
+            <span style="color: #51afef;">"application/json"</span>: {
+              <span style="color: #51afef;">"schema"</span>: {
+                <span style="color: #51afef;">"$ref"</span>: <span style="color: #98be65;">"#/components/schemas/StatusIn"</span>
+              }
+            }
+          },
+          <span style="color: #51afef;">"required"</span>: <span style="color: #a9a1e1;">true</span>
+        }
+      }
+    },
+    <span style="color: #51afef;">"/api/v1/job/{status_id}"</span>: {
+      <span style="color: #51afef;">"get"</span>: {
+        <span style="color: #51afef;">"operationId"</span>: <span style="color: #98be65;">"api_api_get_status"</span>,
+        <span style="color: #51afef;">"summary"</span>: <span style="color: #98be65;">"Get Status"</span>,
+        <span style="color: #51afef;">"parameters"</span>: [
+          {
+            <span style="color: #51afef;">"in"</span>: <span style="color: #98be65;">"path"</span>,
+            <span style="color: #51afef;">"name"</span>: <span style="color: #98be65;">"status_id"</span>,
+            <span style="color: #51afef;">"schema"</span>: {
+              <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Status Id"</span>,
+              <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>,
+              <span style="color: #51afef;">"format"</span>: <span style="color: #98be65;">"uuid"</span>
+            },
+            <span style="color: #51afef;">"required"</span>: <span style="color: #a9a1e1;">true</span>
+          }
+        ],
+        <span style="color: #51afef;">"responses"</span>: {
+          <span style="color: #51afef;">"200"</span>: {
+            <span style="color: #51afef;">"description"</span>: <span style="color: #98be65;">"OK"</span>,
+            <span style="color: #51afef;">"content"</span>: {
+              <span style="color: #51afef;">"application/json"</span>: {
+                <span style="color: #51afef;">"schema"</span>: {
+                  <span style="color: #51afef;">"$ref"</span>: <span style="color: #98be65;">"#/components/schemas/StatusSchema"</span>
+                }
+              }
+            }
+          }
+        }
+      },
+      <span style="color: #51afef;">"put"</span>: {
+        <span style="color: #51afef;">"operationId"</span>: <span style="color: #98be65;">"api_api_update_status"</span>,
+        <span style="color: #51afef;">"summary"</span>: <span style="color: #98be65;">"Update Status"</span>,
+        <span style="color: #51afef;">"parameters"</span>: [
+          {
+            <span style="color: #51afef;">"in"</span>: <span style="color: #98be65;">"path"</span>,
+            <span style="color: #51afef;">"name"</span>: <span style="color: #98be65;">"status_id"</span>,
+            <span style="color: #51afef;">"schema"</span>: {
+              <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Status Id"</span>,
+              <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>,
+              <span style="color: #51afef;">"format"</span>: <span style="color: #98be65;">"uuid"</span>
+            },
+            <span style="color: #51afef;">"required"</span>: <span style="color: #a9a1e1;">true</span>
+          }
+        ],
+        <span style="color: #51afef;">"responses"</span>: {
+          <span style="color: #51afef;">"200"</span>: {
+            <span style="color: #51afef;">"description"</span>: <span style="color: #98be65;">"OK"</span>
+          }
+        },
+        <span style="color: #51afef;">"requestBody"</span>: {
+          <span style="color: #51afef;">"content"</span>: {
+            <span style="color: #51afef;">"application/json"</span>: {
+              <span style="color: #51afef;">"schema"</span>: {
+                <span style="color: #51afef;">"$ref"</span>: <span style="color: #98be65;">"#/components/schemas/StatusIn"</span>
+              }
+            }
+          },
+          <span style="color: #51afef;">"required"</span>: <span style="color: #a9a1e1;">true</span>
+        }
+      },
+      <span style="color: #51afef;">"delete"</span>: {
+        <span style="color: #51afef;">"operationId"</span>: <span style="color: #98be65;">"api_api_delete_status"</span>,
+        <span style="color: #51afef;">"summary"</span>: <span style="color: #98be65;">"Delete Status"</span>,
+        <span style="color: #51afef;">"parameters"</span>: [
+          {
+            <span style="color: #51afef;">"in"</span>: <span style="color: #98be65;">"path"</span>,
+            <span style="color: #51afef;">"name"</span>: <span style="color: #98be65;">"status_id"</span>,
+            <span style="color: #51afef;">"schema"</span>: {
+              <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Status Id"</span>,
+              <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>,
+              <span style="color: #51afef;">"format"</span>: <span style="color: #98be65;">"uuid"</span>
+            },
+            <span style="color: #51afef;">"required"</span>: <span style="color: #a9a1e1;">true</span>
+          }
+        ],
+        <span style="color: #51afef;">"responses"</span>: {
+          <span style="color: #51afef;">"200"</span>: {
+            <span style="color: #51afef;">"description"</span>: <span style="color: #98be65;">"OK"</span>
+          }
+        }
+      }
+    },
+    <span style="color: #51afef;">"/api/v1/jobs"</span>: {
+      <span style="color: #51afef;">"get"</span>: {
+        <span style="color: #51afef;">"operationId"</span>: <span style="color: #98be65;">"api_api_list_status"</span>,
+        <span style="color: #51afef;">"summary"</span>: <span style="color: #98be65;">"List Status"</span>,
+        <span style="color: #51afef;">"parameters"</span>: [],
+        <span style="color: #51afef;">"responses"</span>: {
+          <span style="color: #51afef;">"200"</span>: {
+            <span style="color: #51afef;">"description"</span>: <span style="color: #98be65;">"OK"</span>,
+            <span style="color: #51afef;">"content"</span>: {
+              <span style="color: #51afef;">"application/json"</span>: {
+                <span style="color: #51afef;">"schema"</span>: {
+                  <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Response"</span>,
+                  <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"array"</span>,
+                  <span style="color: #51afef;">"items"</span>: {
+                    <span style="color: #51afef;">"$ref"</span>: <span style="color: #98be65;">"#/components/schemas/StatusSchema"</span>
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  <span style="color: #51afef;">"components"</span>: {
+    <span style="color: #51afef;">"schemas"</span>: {
+      <span style="color: #51afef;">"StatusIn"</span>: {
+        <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"StatusIn"</span>,
+        <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"object"</span>,
+        <span style="color: #51afef;">"properties"</span>: {
+          <span style="color: #51afef;">"name"</span>: {
+            <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Name"</span>,
+            <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>
+          },
+          <span style="color: #51afef;">"description"</span>: {
+            <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Description"</span>,
+            <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>
+          },
+          <span style="color: #51afef;">"dockerfile"</span>: {
+            <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Dockerfile"</span>,
+            <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>
+          }
+        },
+        <span style="color: #51afef;">"required"</span>: [
+          <span style="color: #98be65;">"name"</span>,
+          <span style="color: #98be65;">"description"</span>,
+          <span style="color: #98be65;">"dockerfile"</span>
+        ]
+      },
+      <span style="color: #51afef;">"StatusSchema"</span>: {
+        <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"StatusSchema"</span>,
+        <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"object"</span>,
+        <span style="color: #51afef;">"properties"</span>: {
+          <span style="color: #51afef;">"id"</span>: {
+            <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Id"</span>,
+            <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>,
+            <span style="color: #51afef;">"format"</span>: <span style="color: #98be65;">"uuid"</span>
+          },
+          <span style="color: #51afef;">"name"</span>: {
+            <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Name"</span>,
+            <span style="color: #51afef;">"maxLength"</span>: <span style="color: #da8548; font-weight: bold;">50</span>,
+            <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>
+          },
+          <span style="color: #51afef;">"description"</span>: {
+            <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Description"</span>,
+            <span style="color: #51afef;">"maxLength"</span>: <span style="color: #da8548; font-weight: bold;">100</span>,
+            <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>
+          },
+          <span style="color: #51afef;">"dockerfile"</span>: {
+            <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Dockerfile"</span>,
+            <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>
+          },
+          <span style="color: #51afef;">"status"</span>: {
+            <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Status"</span>,
+            <span style="color: #51afef;">"default"</span>: <span style="color: #98be65;">"init"</span>,
+            <span style="color: #51afef;">"maxLength"</span>: <span style="color: #da8548; font-weight: bold;">10</span>,
+            <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"string"</span>
+          },
+          <span style="color: #51afef;">"performance"</span>: {
+            <span style="color: #51afef;">"title"</span>: <span style="color: #98be65;">"Performance"</span>,
+            <span style="color: #51afef;">"type"</span>: <span style="color: #98be65;">"number"</span>
+          }
+        },
+        <span style="color: #51afef;">"required"</span>: [
+          <span style="color: #98be65;">"name"</span>,
+          <span style="color: #98be65;">"dockerfile"</span>
+        ]
+      }
+    }
+  },
+  <span style="color: #51afef;">"servers"</span>: <span style="color: #a9a1e1;">null</span>
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5726d93" class="outline-3">
+<h3 id="org5726d93"><span class="section-number-3">2.2.</span> Terraform Builder</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+Terraform Builder is a <code>Shell</code> substitute to CI/CD.
+It will perform, continuously, a check on list API to fetch latest non-init task pending.
+Then, builder will clone a <code>tf-templates</code> definition, write and build <code>Dockerfile</code> from <code>base64</code>, <code>sed</code> templates vars and perform a <code>terraform</code> apply.
+</p>
+
+<p>
+Before starting deployment, <code>lynis</code> scan will be perform to generate a first decimal result as <code>performance</code>.
+</p>
+
+<p>
+<code>Namespace</code> and <code>NetworkPolicies</code> will be generated to embed submitted dockerfile.
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgde58ce8" class="outline-2">
+<h2 id="orgde58ce8"><span class="section-number-2">3.</span> Installation</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgb004e97" class="outline-3">
+<h3 id="orgb004e97"><span class="section-number-3">3.1.</span> Requirements</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+You will need :
+</p>
+<ul class="org-ul">
+<li>Docker daemon</li>
+<li>a kubernetes cluster with ingress module available</li>
+<li>terraform binary</li>
+<li>lynis</li>
+<li>curl</li>
+<li>jq</li>
+<li>gzip</li>
+<li>gnu-sed (Mac users)</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org1713c8c" class="outline-3">
+<h3 id="org1713c8c"><span class="section-number-3">3.2.</span> Deploy locally</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Set up the API.
+</p>
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #c678dd;">eval</span> $<span style="color: #51afef;">(</span>minikube docker-env<span style="color: #51afef;">)</span>
+docker build -f .docker/Dockerfile -t api-owkin .
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #ECBE7B;">cd</span> terraform/ &amp;&amp; terraform init &amp;&amp; terraform apply
+</pre>
+</div>
+
+<p>
+Verify your deployment :
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">kubectl get all -n api-dev
+
+NAME                                 READY   STATUS    RESTARTS   AGE
+pod/api-deployment-755bd487f-ggm49   1/1     Running   <span style="color: #da8548; font-weight: bold;">0</span>          87s
+pod/api-deployment-755bd487f-j5mld   1/1     Running   <span style="color: #da8548; font-weight: bold;">0</span>          87s
+pod/api-deployment-755bd487f-lc7tt   1/1     Running   <span style="color: #da8548; font-weight: bold;">0</span>          87s
+
+NAME                  TYPE        CLUSTER-IP     EXTERNAL-IP   PORT<span style="color: #51afef;">(</span>S<span style="color: #51afef;">)</span>    AGE
+service/api-service   ClusterIP   10.98.69.183   &lt;none&gt;        5000/TCP   83s
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api-deployment   3/3     <span style="color: #da8548; font-weight: bold;">3</span>            <span style="color: #da8548; font-weight: bold;">3</span>           87s
+
+NAME                                       DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-deployment-755bd487f   <span style="color: #da8548; font-weight: bold;">3</span>         <span style="color: #da8548; font-weight: bold;">3</span>         <span style="color: #da8548; font-weight: bold;">3</span>       87s
+</pre>
+</div>
+
+<p>
+Curl the API :
+</p>
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #ECBE7B;">curl</span> -LI -v http://192.168.49.2/api/v1/openapi.json
+</pre>
+</div>
+
+<p>
+Initialize Builder :
+</p>
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #ECBE7B;">chmod</span> +x tf-builder/init.sh
+nohup tf-builder/init.sh &gt; log.txt <span style="color: #da8548; font-weight: bold;">2</span>&gt;&amp;<span style="color: #da8548; font-weight: bold;">1</span> &amp;
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org34175f1" class="outline-2">
+<h2 id="org34175f1"><span class="section-number-2">4.</span> Usage</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org93277a0" class="outline-3">
+<h3 id="org93277a0"><span class="section-number-3">4.1.</span> CRUD API</h3>
+<div class="outline-text-3" id="text-4-1">
+</div>
+<div id="outline-container-org1c6d1e1" class="outline-4">
+<h4 id="org1c6d1e1"><span class="section-number-4">4.1.1.</span> Create</h4>
+<div class="outline-text-4" id="text-4-1-1">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #ECBE7B;">curl</span> -X POST -H <span style="color: #98be65;">"Content-Type: application/json"</span> -d @payload.json http://192.168.42.2/api/v1/job
+<span style="color: #51afef;">{</span><span style="color: #98be65;">"id"</span>:<span style="color: #98be65;">"ac083da3-282d-4f20-8b65-37c3a52f39ab"</span><span style="color: #51afef;">}</span>
+</pre>
+</div>
+
+<p>
+Where <code>payload.json</code> :
+</p>
+<div class="org-src-container">
+<pre class="src src-json">{
+  <span style="color: #51afef;">"name"</span>: <span style="color: #98be65;">"My Dockerfile"</span>,
+  <span style="color: #51afef;">"description"</span>: <span style="color: #98be65;">"A docker file with dependencies and stuffs&#8230;"</span>,
+  <span style="color: #51afef;">"dockerfile"</span>: <span style="color: #98be65;">"H4sIAAAAAAAAA41TbWvbMBD+7l9xeKX9JCuh+xTIIGkcGpbFwXNaMgZFky+OiC1pspyu/fWT7OVlGYMYDPY99/Lcc3fTNPkC+s1ulRzcR/1+EMxH43gOFRPSuhfNMOTKoLRCQo4GbRgE8eIJluvsMVlMkkX2nM6yeLzO4odkEkP/DF0txqvpNE7jiTMHz0n6eTJLgdZmHzwkyzVE1ODPRhisXP46sr9sBwYfgBtkFqGp0QTpagGFUY1meQ7EANP6xQNwewvfA3CP//sDkuKEkwb6vV4PSO3y/hCSSlWqwjVC8rYQEA7hRPGd8xUVK7p64TGBJ1KIfWcGjaYSdS2UBKvgVZldLjpyfKteXdL0GDg4UmjLUKVtp1r2De7ixiiNdMmMqO/aeHQJ4MZhn4Ci5dSKCt+VRN8g05YUaIEoGPFWrMFgqgzH2XL/cWhN49jp3Gt1rXPhpEIgbyf5rggTsrasLH2YfXfl2CnaVB3rUnFWeuonqHSq1HIDtKkNrbfMIPV9CblR1Pf7v7hc7wpikCu5EUVjHNsNSCXdSro5c+tHcsni0AMvkckgWH2N07/muEe5b0fwNEuz1Wj+4r6HfjA0aiE/h+4O7oFUrTvcnPl2az3KHofhuZm6tRrceHvoqxxk6jK5g9Eoc5RcYN1WuAylWuiTtuQwHGe9xl0qwhnfInGL6Hf/8pqu6fuKttpbJaTd8uG/Kx5BFPwGuWTvU0cEAAA="</span>
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org30aaef7" class="outline-4">
+<h4 id="org30aaef7"><span class="section-number-4">4.1.2.</span> Get</h4>
+<div class="outline-text-4" id="text-4-1-2">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #ECBE7B;">curl</span> -X GET -s http://192.168.49.2/api/v1/job/ac083da3-282d-4f20-8b65-37c3a52f39ab | jq .
+<span style="color: #51afef;">{</span>
+  <span style="color: #98be65;">"id"</span>: <span style="color: #98be65;">"ac083da3-282d-4f20-8b65-37c3a52f39ab"</span>,
+  <span style="color: #98be65;">"name"</span>: <span style="color: #98be65;">"My Dockerfile"</span>,
+  <span style="color: #98be65;">"description"</span>: <span style="color: #98be65;">"A docker file with dependencies and stuffs&#8230;"</span>,
+  <span style="color: #98be65;">"dockerfile"</span>: <span style="color: #98be65;">"H4sIAAAAAAAAA41TbWvbMBD+7l9xeKX9JCuh+xTIIGkcGpbFwXNaMgZFky+OiC1pspyu/fWT7OVlGYMYDPY99/Lcc3fTNPkC+s1ulRzcR/1+EMxH43gOFRPSuhfNMOTKoLRCQo4GbRgE8eIJluvsMVlMkkX2nM6yeLzO4odkEkP/DF0txqvpNE7jiTMHz0n6eTJLgdZmHzwkyzVE1ODPRhisXP46sr9sBwYfgBtkFqGp0QTpagGFUY1meQ7EANP6xQNwewvfA3CP//sDkuKEkwb6vV4PSO3y/hCSSlWqwjVC8rYQEA7hRPGd8xUVK7p64TGBJ1KIfWcGjaYSdS2UBKvgVZldLjpyfKteXdL0GDg4UmjLUKVtp1r2De7ixiiNdMmMqO/aeHQJ4MZhn4Ci5dSKCt+VRN8g05YUaIEoGPFWrMFgqgzH2XL/cWhN49jp3Gt1rXPhpEIgbyf5rggTsrasLH2YfXfl2CnaVB3rUnFWeuonqHSq1HIDtKkNrbfMIPV9CblR1Pf7v7hc7wpikCu5EUVjHNsNSCXdSro5c+tHcsni0AMvkckgWH2N07/muEe5b0fwNEuz1Wj+4r6HfjA0aiE/h+4O7oFUrTvcnPl2az3KHofhuZm6tRrceHvoqxxk6jK5g9Eoc5RcYN1WuAylWuiTtuQwHGe9xl0qwhnfInGL6Hf/8pqu6fuKttpbJaTd8uG/Kx5BFPwGuWTvU0cEAAA="</span>,
+  <span style="color: #98be65;">"status"</span>: <span style="color: #98be65;">"init"</span>,
+  <span style="color: #98be65;">"performance"</span>: null
+<span style="color: #51afef;">}</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgf98b0c2" class="outline-4">
+<h4 id="orgf98b0c2"><span class="section-number-4">4.1.3.</span> List</h4>
+<div class="outline-text-4" id="text-4-1-3">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #ECBE7B;">curl</span> -s http://192.168.49.2/api/v1/jobs | jq .
+<span style="color: #51afef;">[</span>
+  <span style="color: #c678dd;">{</span>
+    <span style="color: #98be65;">"id"</span>: <span style="color: #98be65;">"ac083da3-282d-4f20-8b65-37c3a52f39ab"</span>,
+    <span style="color: #98be65;">"name"</span>: <span style="color: #98be65;">"My Dockerfile"</span>,
+    <span style="color: #98be65;">"description"</span>: <span style="color: #98be65;">"A docker file with dependencies and stuffs&#8230;"</span>,
+    <span style="color: #98be65;">"dockerfile"</span>: <span style="color: #98be65;">"H4sIAAAAAAAAA41TbWvbMBD+7l9xeKX9JCuh+xTIIGkcGpbFwXNaMgZFky+OiC1pspyu/fWT7OVlGYMYDPY99/Lcc3fTNPkC+s1ulRzcR/1+EMxH43gOFRPSuhfNMOTKoLRCQo4GbRgE8eIJluvsMVlMkkX2nM6yeLzO4odkEkP/DF0txqvpNE7jiTMHz0n6eTJLgdZmHzwkyzVE1ODPRhisXP46sr9sBwYfgBtkFqGp0QTpagGFUY1meQ7EANP6xQNwewvfA3CP//sDkuKEkwb6vV4PSO3y/hCSSlWqwjVC8rYQEA7hRPGd8xUVK7p64TGBJ1KIfWcGjaYSdS2UBKvgVZldLjpyfKteXdL0GDg4UmjLUKVtp1r2De7ixiiNdMmMqO/aeHQJ4MZhn4Ci5dSKCt+VRN8g05YUaIEoGPFWrMFgqgzH2XL/cWhN49jp3Gt1rXPhpEIgbyf5rggTsrasLH2YfXfl2CnaVB3rUnFWeuonqHSq1HIDtKkNrbfMIPV9CblR1Pf7v7hc7wpikCu5EUVjHNsNSCXdSro5c+tHcsni0AMvkckgWH2N07/muEe5b0fwNEuz1Wj+4r6HfjA0aiE/h+4O7oFUrTvcnPl2az3KHofhuZm6tRrceHvoqxxk6jK5g9Eoc5RcYN1WuAylWuiTtuQwHGe9xl0qwhnfInGL6Hf/8pqu6fuKttpbJaTd8uG/Kx5BFPwGuWTvU0cEAAA="</span>,
+    <span style="color: #98be65;">"status"</span>: <span style="color: #98be65;">"init"</span>,
+    <span style="color: #98be65;">"performance"</span>: null
+  <span style="color: #c678dd;">}</span>
+<span style="color: #51afef;">]</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org406a756" class="outline-4">
+<h4 id="org406a756"><span class="section-number-4">4.1.4.</span> Update</h4>
+<div class="outline-text-4" id="text-4-1-4">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #ECBE7B;">curl</span> -X PUT -s http://192.168.49.2/api/v1/job/ac083da3-282d-4f20-8b65-37c3a52f39ab -d @payload.json.sample
+<span style="color: #51afef;">{</span><span style="color: #98be65;">"success"</span>:true<span style="color: #51afef;">}</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org96bcfad" class="outline-4">
+<h4 id="org96bcfad"><span class="section-number-4">4.1.5.</span> Delete</h4>
+<div class="outline-text-4" id="text-4-1-5">
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #ECBE7B;">curl</span> -X DELETE -s http://192.168.49.2/api/v1/job/ac083da3-282d-4f20-8b65-37c3a52f39ab
+<span style="color: #51afef;">{</span><span style="color: #98be65;">"success"</span>:true<span style="color: #51afef;">}</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc4b507a" class="outline-2">
+<h2 id="orgc4b507a"><span class="section-number-2">5.</span> Why it&rsquo;s not good or production ready</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+Within the small amount of time available to build this service, please consider the following points as <b>NO GO</b> :
+</p>
+
+<ul class="org-ul">
+<li>No SSL/TLS support</li>
+<li>No Kubernetes cluster IAM</li>
+<li>No Terraform backend configured for tfstate</li>
+<li>Ugly shell script to recreate a small CI/CD</li>
+<li>No code testing</li>
+<li>No Dockerfile linter checks</li>
+<li>No Password encryptions</li>
+<li>No retry on failed tasks</li>
+<li>No logs</li>
+<li>No production ready databases</li>
+<li>No checksums verifications</li>
+<li>No queue/bus system</li>
+<li>Lack of time obliged me to put some personal paths/IP</li>
+<li>Who starts script with nohup in 2022 ?</li>
+<li>Secrets in clear in the code (env file)</li>
+<li>etc</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Kaderovski</p>
+<p class="date">Created: 2022-12-24 sam. 13:05</p>
+</div>
+</body>
+</html>

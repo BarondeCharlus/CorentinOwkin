@@ -1,0 +1,636 @@
+#+title: Owkin Technical test
+
+* Table of Contents :TOC_3_gh:
+- [[#instruction][Instruction]]
+- [[#conception][Conception]]
+  - [[#restful-api][Restful API]]
+  - [[#terraform-builder][Terraform Builder]]
+  - [[#golang-binary][Golang Binary]]
+- [[#usage][Usage]]
+  - [[#requirements][Requirements]]
+  - [[#deploy-locally][Deploy locally]]
+  - [[#crud-api][CRUD API]]
+    - [[#create][Create]]
+    - [[#get][Get]]
+    - [[#list][List]]
+    - [[#update][Update]]
+    - [[#delete][Delete]]
+- [[#why-its-not-good-or-production-ready][Why it's not good or production ready]]
+
+* Instruction
+Build a Restful API that let customer :
+- submit Dockerfile and get a job id
+- get status and performance if exists
+
+Performance must be expressed as floating.
+
+Once Dockerfile successfully uploaded :
+- build the container
+- scan for vulns
+
+Depending of result :
+- tag status as failed if vulns
+- tag status as success if container was successfully build & run in isolated env
+
+We would like container to write out his performance in `data/perf.json` which would be a volume mount point in `/data`.
+
+Eg of Dockerfile :
+
+#+begin_src Dockerfile
+FROM ubuntu:latest
+# train machine learning model
+# save performances
+CMD echo ʻ{“perf”:0.99}ʼ > /data/perf.json
+#+end_src
+
+Time spent need to be ~4hours.
+
+* Conception
+
+#+CAPTION: Owkin technical test architecture
+[[./static/schema.png]]
+
+Architecture will be divided in 5 parts.
+1. Restful API
+2. Terraform builder
+3. Kubernetes isolation
+4. First performace : Lynis
+5. Second performace : Golang bin embed in Dockerfile
+
+Solution will be hosted on a ~Kubernetes~ cluster, which in my case will be deployed on ~minikube~.
+As we are in a local dev env, we will have to build our custom scheduler and automation terraform templating/deployment in order to build and deploy automatically our tests (Terraform Builder).
+
+In order to isolate building container, we will use ~Namespace~ and ~NetworkPolicy~.
+Namespace for ressources :
+#+BEGIN_QUOTE
+In Kubernetes, namespaces provides a mechanism for isolating groups of resources within a single cluster.
+#+END_QUOTE
+NetworkPolicy for network isolation :
+#+BEGIN_QUOTE
+NetworkPolicies are an application-centric construct which allow you to specify how a pod is allowed to communicate with various network "entities" (we use the word "entity" here to avoid overloading the more common terms such as "endpoints" and "services", which have specific Kubernetes connotations) over the network. NetworkPolicies apply to a connection with a pod on one or both ends, and are not relevant to other connections.
+#+END_QUOTE
+
+In order to build on demande ~K8s~ ressources from ~API~ I use a ~Terraform~ builder through a small ~Shell~ script.
+
+** Restful API
+In order to deliver service quickly, I used ~Django~ and ~Django Ninja API~.
+
+For *security* reasons, Dockerfile will be passed as parameter as *gzip base64*.
+
+Create you ~Dockerfile~ in the rootdir of the repository and run :
+#+BEGIN_SRC SHELL
+make base64
+#+END_SRC
+
+I've created a model that would allow to refer instances as following :
+#+begin_src
+id: uuid4
+name: string
+description: string
+dockerfile: string
+status: string
+performance: float
+#+end_src
+
+Swagger is available at URL/api/v1/docs#/.
+#+CAPTION: swagger
+#+NAME:   fig:Task API
+[[./static/task_api.png]]
+
+API will be described as :
+#+begin_src json
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "NinjaAPI",
+    "version": "0.0.1",
+    "description": ""
+  },
+  "paths": {
+    "/api/v1/job": {
+      "post": {
+        "operationId": "api_api_create_status",
+        "summary": "Create Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/job/{status_id}": {
+      "get": {
+        "operationId": "api_api_get_status",
+        "summary": "Get Status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "status_id",
+            "schema": {
+              "title": "Status Id",
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "api_api_update_status",
+        "summary": "Update Status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "status_id",
+            "schema": {
+              "title": "Status Id",
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusIn"
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "delete": {
+        "operationId": "api_api_delete_status",
+        "summary": "Delete Status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "status_id",
+            "schema": {
+              "title": "Status Id",
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/jobs": {
+      "get": {
+        "operationId": "api_api_list_status",
+        "summary": "List Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StatusSchema"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "StatusIn": {
+        "title": "StatusIn",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "dockerfile": {
+            "title": "Dockerfile",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "dockerfile"
+        ]
+      },
+      "StatusSchema": {
+        "title": "StatusSchema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "title": "Name",
+            "maxLength": 50,
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "maxLength": 100,
+            "type": "string"
+          },
+          "dockerfile": {
+            "title": "Dockerfile",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "default": "init",
+            "maxLength": 10,
+            "type": "string"
+          },
+          "performance": {
+            "title": "Performance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "dockerfile"
+        ]
+      }
+    }
+  },
+  "servers": null
+}
+#+end_src
+
+** Terraform Builder
+
+Terraform Builder is a ~Shell~ substitute to local Kube API automation callers.
+It will perform, continuously, a check on list API to fetch latest non-init task pending.
+Then, builder will clone a ~tf-templates~ definition, write and build ~Dockerfile~ from ~base64~, ~sed~ templates vars and perform a ~terraform~ apply.
+
+Before starting deployment, ~lynis~ scan will be perform to generate a first decimal result as ~performance~.
+
+Then, ~terraform~ will generate appropriate ~kubernetes~ config files based on API result.
+
+We will use ~Namespace~ as ressources isolation, and ~NetworkPolicies~ as network isolation.
+
+We will isolate all networks excepting our API VIP.
+#+begin_src
+    egress {
+    to {
+        ip_block {
+          cidr = "0.0.0.0/0"
+          except = [
+            "192.168.49.2/32",
+            ]
+        }
+      }
+    }
+#+end_src
+
+We create a ~Volume~ inside the ~Pod~ to mount ~/data~ inside container :
+
+#+begin_src
+        container {
+          image             = "{{ID}}:latest"
+          name              = "{{ID}}"
+          image_pull_policy = "Never"
+
+          volume_mounts {
+            name = "data"
+            mountPath = "/data/"
+          }
+#+end_src
+
+Dockerfile will be used in ~Deployment~ but will be a little bootsraped with a ~Golang~ binary that will perform an ~UID~ check from inside and then curl result to API.
+Result will be added to ~Lynis~ result.
+
+It will be a infinite loop started as you want (nohup/systemd daemon etc).
+
+Parsing and updating API will be done like :
+
+#+begin_src shell
+      res=$(curl -s -X GET http://192.168.49.2/api/v1/status | jq '[.[] | select (.status=="init")][0]')
+      id=$(echo ${res} | jq -r .id)
+      name=$(echo ${res} | jq -r .name)
+      dockerfile=$(echo ${res} | jq -r .dockerfile)
+
+      payload=$(cat << EOF
+      {
+      "id": "${id}",
+      "name": "${name}",
+      "dockerfile": "${dockerfile}",
+      "status": "processing"
+      }
+EOF
+      )
+      curl -s -X PUT -H "Content-Type: application/json" http://192.168.49.2/api/v1/status/${id} --data-binary "${payload}"
+#+end_src
+
+Bootstraping Dockerfile to embed pour ~Golang bin~
+#+begin_src shell
+      temp_path=".${id}-tf-templates"
+      cp -r tf-templates/ ${temp_path}
+      sed -i "s/{{ID}}/${id}/g" ${temp_path}/namespace.tf
+      sed -i "s/{{ID}}/${id}/g" ${temp_path}/deployment.tf
+      sed -i "s/{{ID}}/${id}/g" ${temp_path}/networkpolicy.tf
+
+      echo ${dockerfile} | base64 -d | gunzip > ${temp_path}/Dockerfile
+      MKD="RUN mkdir -p /run"
+      COPY="COPY ./go-bin/main /run"
+      CHM="RUN chmod +x /run/main"
+      RUN="RUN ./run/main"
+      sed "\$i $MKD" ${temp_path}/Dockerfile
+      sed "\$i $COPY" ${temp_path}/Dockerfile
+      sed "\$i $CHM" ${temp_path}/Dockerfile
+      sed "\$i $RUN" ${temp_path}/Dockerfile
+#+end_src
+
+Running ~Lynis~ test and fetch results :
+#+begin_src shell
+      report=$(lynis audit dockerfile ${temp_path}/Dockerfile)
+      warns=$(grep -i 'warning' ~/lynis-report.dat | wc -l) ||:
+      if [ ${warns} -gt 0 ] ; then
+         perf=$(echo "scale=1;${warns} / 10" | bc -l)
+         performance=$(echo "${performance} + ${perf}" | bc -l | awk '{printf "%.2f\n", $0}')
+      fi
+#+end_src
+
+Finally, we load env from our ~kubernetes cluster~ to build the image, clone ~terraform templates files~ and deploy :
+
+#+begin_src shell
+      eval $(minikube -p minikube docker-env)
+      docker build -f ${temp_path}/Dockerfile -t ${id}:latest
+
+      cd ${temp_path}
+      terraform init
+      terraform plan
+      terraform apply --auto-approve
+      sleep 3
+#+end_src
+
+** Golang Binary
+
+Golang binary will be injected directly in Dockerfile to perform inner checks and produce a score.
+To keep strategy simple we will perform the following check :
+
+#+begin_src golang
+func getEUID() int {
+    if os.Geteuid() == 0 {
+       return 1
+    }
+
+    return 0
+}
+#+end_src
+
+Then we update final value on API :
+
+#+begin_src golang
+
+    uuid := os.Getenv("UUID")
+    name := os.Getenv("NAME")
+    description := os.Getenv("DESCRIPTION")
+    dockerfile := os.Getenv("DOCKERFILE")
+    perf := os.Getenv("PERFORMANCE")
+
+    performance = sumPerf(performance, perf)
+    status := setStatus(performance)
+
+    var jsonData = []byte(fmt.Sprintf(`{
+            "id": %v,
+            "name": %v,
+            "description": %v,
+            "dockerfile": %v,
+            "status": %v,
+            "performance": %v
+    }`, uuid, name, description, dockerfile, status, performance))
+
+    fmt.Println(bytes.NewBuffer(jsonData))
+    url := "http://192.168.49.2/api/v1/job/" + uuid
+
+    request, error := http.NewRequest("PUT", url, bytes.NewBuffer(jsonData))
+    request.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+    client := &http.Client{}
+    response, error := client.Do(request)
+    if error != nil {
+        panic(error)
+    }
+    defer response.Body.Close()
+
+    body, _ := ioutil.ReadAll(response.Body)
+    fmt.Println("response Body:", string(body))
+#+end_src
+
+We also write result in ~/data/perf.json~.
+
+#+begin_src golang
+    f, err := os.Create("/data/perf.json")
+    if err != nil {
+       fmt.Println(err)
+       return
+    }
+
+    _, err = f.WriteString(fmt.Sprintf("%d",performance))
+    if err != nil {
+       fmt.Println(err)
+       f.Close()
+       return
+    }
+
+    err = f.Close()
+    if err != nil {
+       fmt.Println(err)
+       return
+    }
+#+end_src
+
+Finally, we send to API the final result :
+
+#+begin_src golang
+root@2e57b4ef6f44:/usr/src/app# ./main
+{
+    "id": 12345,
+    "name": name,
+    "description": description
+    "dockerfile": dockerfile,
+    "status": fail,
+    "performance": 1
+}
+#+end_src
+* Usage
+
+
+** Requirements
+
+You will need :
+- Docker daemon
+- a kubernetes cluster with ingress module available
+- terraform binary
+- lynis
+- curl
+- jq
+- gzip
+- gnu-sed (Mac users)
+
+** Deploy locally
+
+Set up the API.
+#+begin_src shell
+eval $(minikube docker-env)
+docker build -f .docker/Dockerfile -t api-owkin .
+#+end_src
+
+#+begin_src shell
+cd terraform/ && terraform init && terraform apply
+#+end_src
+
+Verify your deployment :
+#+begin_src shell
+kubectl get all -n api-dev
+
+NAME                                 READY   STATUS    RESTARTS   AGE
+pod/api-deployment-755bd487f-ggm49   1/1     Running   0          87s
+pod/api-deployment-755bd487f-j5mld   1/1     Running   0          87s
+pod/api-deployment-755bd487f-lc7tt   1/1     Running   0          87s
+
+NAME                  TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+service/api-service   ClusterIP   10.98.69.183   <none>        5000/TCP   83s
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api-deployment   3/3     3            3           87s
+
+NAME                                       DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-deployment-755bd487f   3         3         3       87s
+#+end_src
+
+Curl the API :
+#+begin_src shell
+curl -LI -v http://192.168.49.2/api/v1/openapi.json
+#+end_src
+
+Initialize Builder :
+#+begin_src shell
+chmod +x tf-builder/init.sh
+nohup tf-builder/init.sh > log.txt 2>&1 &
+#+end_src
+
+
+** CRUD API
+*** Create
+#+begin_src shell
+curl -X POST -H "Content-Type: application/json" -d @payload.json http://192.168.42.2/api/v1/job
+{"id":"ac083da3-282d-4f20-8b65-37c3a52f39ab"}
+#+end_src
+
+Where ~payload.json~ :
+#+begin_src json
+{
+  "name": "My Dockerfile",
+  "description": "A docker file with dependencies and stuffs…",
+  "dockerfile": "H4sIAAAAAAAAA41TbWvbMBD+7l9xeKX9JCuh+xTIIGkcGpbFwXNaMgZFky+OiC1pspyu/fWT7OVlGYMYDPY99/Lcc3fTNPkC+s1ulRzcR/1+EMxH43gOFRPSuhfNMOTKoLRCQo4GbRgE8eIJluvsMVlMkkX2nM6yeLzO4odkEkP/DF0txqvpNE7jiTMHz0n6eTJLgdZmHzwkyzVE1ODPRhisXP46sr9sBwYfgBtkFqGp0QTpagGFUY1meQ7EANP6xQNwewvfA3CP//sDkuKEkwb6vV4PSO3y/hCSSlWqwjVC8rYQEA7hRPGd8xUVK7p64TGBJ1KIfWcGjaYSdS2UBKvgVZldLjpyfKteXdL0GDg4UmjLUKVtp1r2De7ixiiNdMmMqO/aeHQJ4MZhn4Ci5dSKCt+VRN8g05YUaIEoGPFWrMFgqgzH2XL/cWhN49jp3Gt1rXPhpEIgbyf5rggTsrasLH2YfXfl2CnaVB3rUnFWeuonqHSq1HIDtKkNrbfMIPV9CblR1Pf7v7hc7wpikCu5EUVjHNsNSCXdSro5c+tHcsni0AMvkckgWH2N07/muEe5b0fwNEuz1Wj+4r6HfjA0aiE/h+4O7oFUrTvcnPl2az3KHofhuZm6tRrceHvoqxxk6jK5g9Eoc5RcYN1WuAylWuiTtuQwHGe9xl0qwhnfInGL6Hf/8pqu6fuKttpbJaTd8uG/Kx5BFPwGuWTvU0cEAAA="
+}
+#+end_src
+*** Get
+#+begin_src shell
+curl -X GET -s http://192.168.49.2/api/v1/job/ac083da3-282d-4f20-8b65-37c3a52f39ab | jq .
+{
+  "id": "ac083da3-282d-4f20-8b65-37c3a52f39ab",
+  "name": "My Dockerfile",
+  "description": "A docker file with dependencies and stuffs…",
+  "dockerfile": "H4sIAAAAAAAAA41TbWvbMBD+7l9xeKX9JCuh+xTIIGkcGpbFwXNaMgZFky+OiC1pspyu/fWT7OVlGYMYDPY99/Lcc3fTNPkC+s1ulRzcR/1+EMxH43gOFRPSuhfNMOTKoLRCQo4GbRgE8eIJluvsMVlMkkX2nM6yeLzO4odkEkP/DF0txqvpNE7jiTMHz0n6eTJLgdZmHzwkyzVE1ODPRhisXP46sr9sBwYfgBtkFqGp0QTpagGFUY1meQ7EANP6xQNwewvfA3CP//sDkuKEkwb6vV4PSO3y/hCSSlWqwjVC8rYQEA7hRPGd8xUVK7p64TGBJ1KIfWcGjaYSdS2UBKvgVZldLjpyfKteXdL0GDg4UmjLUKVtp1r2De7ixiiNdMmMqO/aeHQJ4MZhn4Ci5dSKCt+VRN8g05YUaIEoGPFWrMFgqgzH2XL/cWhN49jp3Gt1rXPhpEIgbyf5rggTsrasLH2YfXfl2CnaVB3rUnFWeuonqHSq1HIDtKkNrbfMIPV9CblR1Pf7v7hc7wpikCu5EUVjHNsNSCXdSro5c+tHcsni0AMvkckgWH2N07/muEe5b0fwNEuz1Wj+4r6HfjA0aiE/h+4O7oFUrTvcnPl2az3KHofhuZm6tRrceHvoqxxk6jK5g9Eoc5RcYN1WuAylWuiTtuQwHGe9xl0qwhnfInGL6Hf/8pqu6fuKttpbJaTd8uG/Kx5BFPwGuWTvU0cEAAA=",
+  "status": "init",
+  "performance": null
+}
+#+end_src
+
+*** List
+#+begin_src shell
+curl -s http://192.168.49.2/api/v1/jobs | jq .
+[
+  {
+    "id": "ac083da3-282d-4f20-8b65-37c3a52f39ab",
+    "name": "My Dockerfile",
+    "description": "A docker file with dependencies and stuffs…",
+    "dockerfile": "H4sIAAAAAAAAA41TbWvbMBD+7l9xeKX9JCuh+xTIIGkcGpbFwXNaMgZFky+OiC1pspyu/fWT7OVlGYMYDPY99/Lcc3fTNPkC+s1ulRzcR/1+EMxH43gOFRPSuhfNMOTKoLRCQo4GbRgE8eIJluvsMVlMkkX2nM6yeLzO4odkEkP/DF0txqvpNE7jiTMHz0n6eTJLgdZmHzwkyzVE1ODPRhisXP46sr9sBwYfgBtkFqGp0QTpagGFUY1meQ7EANP6xQNwewvfA3CP//sDkuKEkwb6vV4PSO3y/hCSSlWqwjVC8rYQEA7hRPGd8xUVK7p64TGBJ1KIfWcGjaYSdS2UBKvgVZldLjpyfKteXdL0GDg4UmjLUKVtp1r2De7ixiiNdMmMqO/aeHQJ4MZhn4Ci5dSKCt+VRN8g05YUaIEoGPFWrMFgqgzH2XL/cWhN49jp3Gt1rXPhpEIgbyf5rggTsrasLH2YfXfl2CnaVB3rUnFWeuonqHSq1HIDtKkNrbfMIPV9CblR1Pf7v7hc7wpikCu5EUVjHNsNSCXdSro5c+tHcsni0AMvkckgWH2N07/muEe5b0fwNEuz1Wj+4r6HfjA0aiE/h+4O7oFUrTvcnPl2az3KHofhuZm6tRrceHvoqxxk6jK5g9Eoc5RcYN1WuAylWuiTtuQwHGe9xl0qwhnfInGL6Hf/8pqu6fuKttpbJaTd8uG/Kx5BFPwGuWTvU0cEAAA=",
+    "status": "init",
+    "performance": null
+  }
+]
+#+end_src
+
+*** Update
+#+begin_src shell
+curl -X PUT -s http://192.168.49.2/api/v1/job/ac083da3-282d-4f20-8b65-37c3a52f39ab -d @payload.json.sample
+{"success":true}
+#+end_src
+
+*** Delete
+#+begin_src shell
+curl -X DELETE -s http://192.168.49.2/api/v1/job/ac083da3-282d-4f20-8b65-37c3a52f39ab
+{"success":true}
+#+end_src
+
+* Why it's not good or production ready
+Within the small amount of time available to build this service, please consider the following points as *NO GO* :
+
+- No SSL/TLS support
+- No Kubernetes cluster IAM
+- No Terraform backend configured for tfstate
+- Ugly shell script to automatize terraform templating and deployment
+- No code testing
+- No Dockerfile linter checks
+- No Password encryptions
+- No retry on failed tasks
+- No logs
+- No production ready databases
+- No checksums verifications
+- No queue/bus system
+- Lack of time obliged me to put some personal paths/IP
+- Who starts script with nohup in 2022 ?
+- Secrets in clear in the code (env file)
+- etc
